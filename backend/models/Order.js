@@ -14,9 +14,22 @@ const orderSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    pickupLat: {
+        type: Number,
+        default: 25.5941
+    },
+    pickupLng: {
+      type: Number,
+      default: 85.1376
+    },
     dropLocation: {
         type: String,
         required: true
+    },
+    payloadWeight: {
+      type: Number,
+      required: true,
+      min: 0.1
     },
     status: {
         type: String,

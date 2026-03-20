@@ -1,0 +1,4 @@
+PORT=5000
+MONGO_URI=mongodb+srv://rehanalam:Rehan1234@dropzone.rcpgcyk.mongodb.net/?
+appName=dropZone
+JWT_SECRET=dropzone_super_secret_key_2024

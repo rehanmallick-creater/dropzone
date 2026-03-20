@@ -29,44 +29,52 @@ exports.getAllOrders = async (req, res) => {
 //  CREATE ORDER (USER)
 exports.createOrder = async (req, res) => {
   try {
-    const { pickupLocation, dropLocation, description } = req.body;
+    const { pickupLocation, pickupLat, pickupLng, dropLocation, description, payloadWeight } = req.body;
 
     if (!pickupLocation || !dropLocation) {
       return res.status(400).json({ message: 'Locations are required' });
     }
 
-    // Find nearest drone
-    const drone = await assignNearestDrone(pickupLocation);
+    if (!payloadWeight || payloadWeight <= 0) {
+      return res.status(400).json({ message: 'Valid payload weight is required' });
+    }
+    const pickupCoords = {
+      latitude: pickupLat || 25.5941,
+      longitude: pickupLng || 85.1376
+    };
+
+    const drone = await assignNearestDrone(pickupLocation, payloadWeight);
 
     if (!drone) {
-     return res.status(400).json({
-       message: 'No available drones nearby'
+      return res.status(400).json({
+        message: 'No available drones can handle this payload weight'
       });
-   }
+    }
 
-   // mark drone as assigned
-   drone.status = 'assigned';
-   await drone.save();
+    drone.status = 'assigned';
+    await drone.save();
 
-   // create order with assigned drone
-   const order = await Order.create({
-     user: req.user.id,
-     pickupLocation,
-     dropLocation,
-     description,
-     drone: drone._id,
-     status: 'assigned'
-   });
+    const order = await Order.create({
+      user: req.user.id,
+      pickupLocation,
+      pickupLat: pickupCoords.latitude,
+      pickupLng: pickupCoords.longitude,
+      dropLocation,
+      description,
+      payloadWeight,
+      drone: drone._id,
+      status: 'assigned'
+    });
 
     res.status(201).json(order);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 //  AUTO ASSIGN NEAREST DRONE
-const assignNearestDrone = async (pickupLocation) => {
+const assignNearestDrone = async (pickupLocation, payloadWeight) => {
   const drones = await Drone.find({ status: 'available' });
+  
 
   if (!drones.length) return null;
 
@@ -74,12 +82,13 @@ const assignNearestDrone = async (pickupLocation) => {
   let minDistance = Infinity;
 
   for (let drone of drones) {
-    // skip low battery drones
     if (drone.battery < 30) continue;
 
+    if (drone.maxPayload < payloadWeight) continue;
+
     const distance = Math.sqrt(
-      Math.pow(drone.latitude - pickupLocation.latitude, 2) +
-      Math.pow(drone.longitude - pickupLocation.longitude, 2)
+      Math.pow(drone.latitude - (pickupLocation.latitude || 0), 2) +
+      Math.pow(drone.longitude - (pickupLocation.longitude || 0), 2)
     );
 
     if (distance < minDistance) {

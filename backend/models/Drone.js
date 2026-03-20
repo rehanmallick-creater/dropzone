@@ -17,6 +17,11 @@ const droneSchema = new mongoose.Schema({
         max: 100,
         default: 100
     },
+    maxPayload: {
+      type: Number,
+      required: true,
+      default: 5
+    },
     latitude: {
         type: Number,
         default: 25.5941
