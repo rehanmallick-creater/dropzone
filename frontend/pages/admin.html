@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - DropZone</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="../css/admin.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <svg viewBox="0 0 40 40" width="28" height="28" style="vertical-align:middle;margin-right:6px">
+        <line x1="20" y1="20" x2="6" y2="10" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="20" y1="20" x2="34" y2="10" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="20" y1="20" x2="6" y2="30" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
+        <line x1="20" y1="20" x2="34" y2="30" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="6" cy="10" r="4" fill="#1d4ed8"/>
+        <circle cx="34" cy="10" r="4" fill="#1d4ed8"/>
+        <circle cx="6" cy="30" r="4" fill="#1d4ed8"/>
+        <circle cx="34" cy="30" r="4" fill="#1d4ed8"/>
+        <ellipse cx="6" cy="10" rx="7" ry="2.5" fill="#2563eb" opacity="0.8" transform="rotate(-35 6 10)"/>
+        <ellipse cx="34" cy="10" rx="7" ry="2.5" fill="#2563eb" opacity="0.8" transform="rotate(35 34 10)"/>
+        <ellipse cx="6" cy="30" rx="7" ry="2.5" fill="#2563eb" opacity="0.8" transform="rotate(35 6 30)"/>
+        <ellipse cx="34" cy="30" rx="7" ry="2.5" fill="#2563eb" opacity="0.8" transform="rotate(-35 34 30)"/>
+        <rect x="14" y="17" width="12" height="7" rx="3" fill="#1e3a8a"/>
+        <circle cx="20" cy="27" r="3" fill="#0ea5e9"/>
+      </svg>
+      DropZone Admin
+    </div>
+    <div class="nav-links">
+      <span id="adminName" style="color:#4b5563;font-size:14px;"></span>
+      <button onclick="logout()" class="btn-logout">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Stats Row -->
+  <div class="admin-container">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-number" id="totalOrders">0</div>
+        <div class="stat-label">Total Orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="pendingOrders">0</div>
+        <div class="stat-label">Pending Orders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="activeDrones">0</div>
+        <div class="stat-label">Active Drones</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="deliveredOrders">0</div>
+        <div class="stat-label">Delivered Today</div>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="admin-grid">
+
+      <!-- Left: Orders + Drones -->
+      <div class="admin-left">
+
+        <!-- Add Drone -->
+        <div class="card">
+          <h3>Add New Drone</h3>
+          <p class="card-subtitle">Register a drone to the fleet</p>
+          <div class="alert" id="droneAlert"></div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Drone Name</label>
+              <input type="text" id="droneName" placeholder="e.g. Drone Beta">
+            </div>
+            <div class="form-group">
+              <label>Max Payload (kg)</label>
+              <input type="number" id="dronePayload" placeholder="e.g. 10" min="1">
+            </div>
+            <div class="form-group">
+              <label>Battery %</label>
+              <input type="number" id="droneBattery" placeholder="100" min="0" max="100">
+            </div>
+          </div>
+          <button class="btn-primary" onclick="addDrone()">Add Drone</button>
+        </div>
+
+        <!-- Drones List -->
+        <div class="card">
+          <h3>Drone Fleet</h3>
+          <p class="card-subtitle">Manage your drones</p>
+          <div id="dronesList">
+            <div class="loading">Loading drones...</div>
+          </div>
+        </div>
+
+        <!-- Orders List -->
+        <div class="card">
+          <h3>All Orders</h3>
+          <p class="card-subtitle">Manage deliveries</p>
+          <div id="adminOrdersList">
+            <div class="loading">Loading orders...</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right: Map -->
+      <div class="admin-right">
+        <div class="card map-card">
+          <h3>Live Drone Map</h3>
+          <p class="card-subtitle">Real time drone positions</p>
+          <div id="map"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="../js/admin.js"></script>
+</body>
+</html>

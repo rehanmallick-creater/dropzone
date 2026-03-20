@@ -70,7 +70,7 @@ async function loadOrders() {
       <div class="order-item">
         <div class="order-info">
           <h4>${order.pickupLocation} → ${order.dropLocation}</h4>
-          <p>${order.description || 'No description'} • ${order.payloadWeight}kg • ${new Date(order.createdAt).toLocaleDateString()}</p>
+          <p>${order.description || 'No description'} • ${order.payloadWeight}kg • ${order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</p>
         </div>
         <span class="order-status status-${order.status.replace(' ', '-')}">${order.status}</span>
       </div>

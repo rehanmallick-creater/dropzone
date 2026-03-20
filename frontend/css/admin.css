@@ -1,0 +1,166 @@
+.admin-container {
+  padding: 24px 40px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px 24px;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 32px;
+  font-weight: 700;
+  color: #2563eb;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 24px;
+}
+
+.admin-left {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.admin-right {
+  position: sticky;
+  top: 80px;
+  height: fit-content;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* Map */
+.map-card {
+  height: 580px;
+  display: flex;
+  flex-direction: column;
+}
+
+#map {
+  flex: 1;
+  border-radius: 10px;
+  margin-top: 12px;
+  min-height: 480px;
+}
+
+/* Drone item */
+.drone-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.drone-info h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 4px;
+}
+
+.drone-info p {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.drone-badges {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.battery-bar {
+  width: 60px;
+  height: 8px;
+  background: #f0f0f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.battery-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: #16a34a;
+}
+
+.battery-fill.low { background: #dc2626; }
+.battery-fill.medium { background: #d97706; }
+
+/* Admin order item */
+.admin-order-item {
+  padding: 14px;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.admin-order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.admin-order-header h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.admin-order-details {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 10px;
+}
+
+.order-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-status {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+}
+
+.btn-status:hover { opacity: 0.8; }
+.btn-ontheway { background: #eff6ff; color: #2563eb; }
+.btn-delivered { background: #f0fdf4; color: #16a34a; }
+.btn-cancelled { background: #fef2f2; color: #dc2626; }
