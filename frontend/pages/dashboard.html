@@ -6,6 +6,7 @@
   <title>Dashboard - DropZone</title>
   <link rel="stylesheet" href="../css/style.css">
   <link rel="stylesheet" href="../css/dashboard.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -31,8 +32,6 @@
       </svg>
       DropZone
     </div>
-
-    
     <div class="nav-links">
       <span id="userName" style="color:#4b5563;font-size:14px;"></span>
       <button onclick="logout()" class="btn-logout">Logout</button>
@@ -50,23 +49,74 @@
         <h3>Place New Order</h3>
         <p class="card-subtitle">Enter delivery details below</p>
         <div class="alert" id="orderAlert"></div>
+
         <div class="form-group">
           <label>Pickup Location</label>
-          <input type="text" id="pickup" placeholder="e.g. Boring Road, Patna">
+          <select id="pickupSelect" onchange="handlePickupSelect()">
+            <option value="">-- Select preset location --</option>
+            <option value="Boring Road, Patna|25.6097|85.1263">Boring Road</option>
+            <option value="Bailey Road, Patna|25.6189|85.0997">Bailey Road</option>
+            <option value="Patna Junction|25.5941|85.1376">Patna Junction</option>
+            <option value="Danapur|25.6142|85.0434">Danapur</option>
+            <option value="Kankarbagh|25.5900|85.1500">Kankarbagh</option>
+            <option value="Rajendra Nagar|25.6020|85.1100">Rajendra Nagar</option>
+            <option value="Patna Sahib|25.6010|85.1800">Patna Sahib</option>
+            <option value="Gardanibagh|25.5820|85.1350">Gardanibagh</option>
+          </select>
+          <input type="text" id="pickup" placeholder="Or type custom location" style="margin-top:8px">
+          <input type="hidden" id="pickupLat" value="25.5941">
+          <input type="hidden" id="pickupLng" value="85.1376">
+          <small style="color:#6b7280;font-size:12px">Or click on the map below to set pickup</small>
         </div>
+
         <div class="form-group">
           <label>Drop Location</label>
-          <input type="text" id="drop" placeholder="e.g. Bailey Road, Patna">
+          <select id="dropSelect" onchange="handleDropSelect()">
+            <option value="">-- Select preset location --</option>
+            <option value="Boring Road, Patna|25.6097|85.1263">Boring Road</option>
+            <option value="Bailey Road, Patna|25.6189|85.0997">Bailey Road</option>
+            <option value="Patna Junction|25.5941|85.1376">Patna Junction</option>
+            <option value="Danapur|25.6142|85.0434">Danapur</option>
+            <option value="Kankarbagh|25.5900|85.1500">Kankarbagh</option>
+            <option value="Rajendra Nagar|25.6020|85.1100">Rajendra Nagar</option>
+            <option value="Patna Sahib|25.6010|85.1800">Patna Sahib</option>
+            <option value="Gardanibagh|25.5820|85.1350">Gardanibagh</option>
+          </select>
+          <input type="text" id="drop" placeholder="Or type custom location" style="margin-top:8px">
+          <input type="hidden" id="dropLat" value="25.5941">
+          <input type="hidden" id="dropLng" value="85.1376">
+          <small style="color:#6b7280;font-size:12px">Or click on the map below to set drop</small>
         </div>
+
         <div class="form-group">
           <label>Description</label>
           <input type="text" id="description" placeholder="e.g. Medicine package">
         </div>
+
         <div class="form-group">
           <label>Payload Weight (kg)</label>
           <input type="number" id="payload" placeholder="e.g. 2.5" min="0.1" step="0.1">
         </div>
+
         <button class="btn-primary" onclick="placeOrder()">Place Order</button>
+      </div>
+
+      <!-- Mini Map for location selection -->
+      <div class="card">
+        <h3>Select Location on Map</h3>
+        <p class="card-subtitle">
+          Click on map to set location —
+          <span id="mapMode" style="color:#2563eb;font-weight:500">selecting pickup</span>
+        </p>
+        <div style="display:flex;gap:8px;margin-bottom:12px">
+          <button class="btn-map-mode active" id="btnPickup" onclick="setMapMode('pickup')">
+            Set Pickup
+          </button>
+          <button class="btn-map-mode" id="btnDrop" onclick="setMapMode('drop')">
+            Set Drop
+          </button>
+        </div>
+        <div id="miniMap" style="height:300px;border-radius:10px;"></div>
       </div>
 
       <!-- My Orders -->
@@ -99,6 +149,7 @@
 
   </div>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="../js/dashboard.js"></script>
 </body>
 </html>

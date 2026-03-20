@@ -29,7 +29,7 @@ exports.getAllOrders = async (req, res) => {
 //  CREATE ORDER (USER)
 exports.createOrder = async (req, res) => {
   try {
-    const { pickupLocation, pickupLat, pickupLng, dropLocation, description, payloadWeight } = req.body;
+    const { pickupLocation, pickupLat, pickupLng, dropLocation, dropLat , dropLng , description, payloadWeight } = req.body;
 
     if (!pickupLocation || !dropLocation) {
       return res.status(400).json({ message: 'Locations are required' });
@@ -57,9 +57,12 @@ exports.createOrder = async (req, res) => {
     const order = await Order.create({
       user: req.user.id,
       pickupLocation,
-      pickupLat: pickupCoords.latitude,
-      pickupLng: pickupCoords.longitude,
+      pickupLat: parseFloat(pickupLat) || 25.5941,
+      pickupLng: parseFloat(pickupLng) || 85.1376,
       dropLocation,
+      dropLat: parseFloat(dropLat) || 25.5941,
+      dropLng: parseFloat(dropLng) || 85.1376,
+      
       description,
       payloadWeight,
       drone: drone._id,

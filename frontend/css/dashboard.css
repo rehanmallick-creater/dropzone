@@ -257,3 +257,40 @@
 .chat-input-row button:hover {
   background: #1d4ed8;
 }
+
+.btn-map-mode {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.btn-map-mode.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  background: #ffffff;
+  color: #1a1a2e;
+  transition: border 0.2s;
+  cursor: pointer;
+}
+
+select:focus {
+  border-color: #2563eb;
+}

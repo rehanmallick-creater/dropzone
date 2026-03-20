@@ -8,16 +8,112 @@ if (!token) {
 
 document.getElementById('userName').textContent = `👋 ${user?.name}`;
 
+let miniMap;
+let pickupMarker;
+let dropMarker;
+let mapMode = 'pickup';
+
+function initMiniMap() {
+  miniMap = L.map('miniMap').setView([25.5941, 85.1376], 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(miniMap);
+
+  miniMap.on('click', function(e) {
+    const { lat, lng } = e.latlng;
+    const locationName = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+
+    if (mapMode === 'pickup') {
+      document.getElementById('pickup').value = `Custom: ${locationName}`;
+      document.getElementById('pickupLat').value = lat;
+      document.getElementById('pickupLng').value = lng;
+
+      if (pickupMarker) miniMap.removeLayer(pickupMarker);
+      pickupMarker = L.marker([lat, lng], {
+        icon: L.divIcon({
+          html: `<div style="background:#2563eb;color:white;padding:4px 8px;border-radius:6px;font-size:11px;white-space:nowrap;font-family:Inter,sans-serif">Pickup</div>`,
+          className: '',
+          iconAnchor: [20, 10]
+        })
+      }).addTo(miniMap);
+
+    } else {
+      document.getElementById('drop').value = `Custom: ${locationName}`;
+      document.getElementById('dropLat').value = lat;
+      document.getElementById('dropLng').value = lng;
+
+      if (dropMarker) miniMap.removeLayer(dropMarker);
+      dropMarker = L.marker([lat, lng], {
+        icon: L.divIcon({
+          html: `<div style="background:#dc2626;color:white;padding:4px 8px;border-radius:6px;font-size:11px;white-space:nowrap;font-family:Inter,sans-serif">Drop</div>`,
+          className: '',
+          iconAnchor: [20, 10]
+        })
+      }).addTo(miniMap);
+    }
+  });
+}
+
+function setMapMode(mode) {
+  mapMode = mode;
+  document.getElementById('mapMode').textContent = `selecting ${mode}`;
+  document.getElementById('btnPickup').classList.toggle('active', mode === 'pickup');
+  document.getElementById('btnDrop').classList.toggle('active', mode === 'drop');
+}
+
+function handlePickupSelect() {
+  const val = document.getElementById('pickupSelect').value;
+  if (!val) return;
+  const [name, lat, lng] = val.split('|');
+  document.getElementById('pickup').value = name;
+  document.getElementById('pickupLat').value = lat;
+  document.getElementById('pickupLng').value = lng;
+
+  if (pickupMarker) miniMap.removeLayer(pickupMarker);
+  pickupMarker = L.marker([parseFloat(lat), parseFloat(lng)], {
+    icon: L.divIcon({
+      html: `<div style="background:#2563eb;color:white;padding:4px 8px;border-radius:6px;font-size:11px;white-space:nowrap;font-family:Inter,sans-serif">Pickup</div>`,
+      className: '',
+      iconAnchor: [20, 10]
+    })
+  }).addTo(miniMap);
+  miniMap.setView([parseFloat(lat), parseFloat(lng)], 14);
+}
+
+function handleDropSelect() {
+  const val = document.getElementById('dropSelect').value;
+  if (!val) return;
+  const [name, lat, lng] = val.split('|');
+  document.getElementById('drop').value = name;
+  document.getElementById('dropLat').value = lat;
+  document.getElementById('dropLng').value = lng;
+
+  if (dropMarker) miniMap.removeLayer(dropMarker);
+  dropMarker = L.marker([parseFloat(lat), parseFloat(lng)], {
+    icon: L.divIcon({
+      html: `<div style="background:#dc2626;color:white;padding:4px 8px;border-radius:6px;font-size:11px;white-space:nowrap;font-family:Inter,sans-serif">Drop</div>`,
+      className: '',
+      iconAnchor: [20, 10]
+    })
+  }).addTo(miniMap);
+  miniMap.setView([parseFloat(lat), parseFloat(lng)], 14);
+}
+
 async function placeOrder() {
   const pickup = document.getElementById('pickup').value;
   const drop = document.getElementById('drop').value;
+  const dropLat = document.getElementById('dropLat').value;
+  const dropLng = document.getElementById('dropLng').value;
   const description = document.getElementById('description').value;
   const payload = document.getElementById('payload').value;
+  const pickupLat = document.getElementById('pickupLat').value;
+  const pickupLng = document.getElementById('pickupLng').value;
 
-  if (!pickup || !drop) {
-    showOrderAlert('Please fill pickup and drop location', 'error');
+  if (!pickup || !drop || !payload) {
+    showOrderAlert('Please fill all required fields', 'error');
     return;
   }
+
   if (payload <= 0) {
     showOrderAlert('Payload weight must be greater than 0', 'error');
     return;
@@ -30,7 +126,16 @@ async function placeOrder() {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({ pickupLocation: pickup, dropLocation: drop, description, payloadWeight: parseFloat(payload) })
+      body: JSON.stringify({
+        pickupLocation: pickup,
+        pickupLat: parseFloat(pickupLat),
+        pickupLng: parseFloat(pickupLng),
+        dropLocation: drop,
+        dropLat: parseFloat(dropLat),
+        dropLng: parseFloat(dropLng),
+        description,
+        payloadWeight: parseFloat(payload)
+      })
     });
 
     const data = await response.json();
@@ -45,6 +150,10 @@ async function placeOrder() {
     document.getElementById('drop').value = '';
     document.getElementById('description').value = '';
     document.getElementById('payload').value = '';
+    document.getElementById('pickupSelect').value = '';
+    document.getElementById('dropSelect').value = '';
+    if (pickupMarker) miniMap.removeLayer(pickupMarker);
+    if (dropMarker) miniMap.removeLayer(dropMarker);
     loadOrders();
 
   } catch (error) {
@@ -70,7 +179,9 @@ async function loadOrders() {
       <div class="order-item">
         <div class="order-info">
           <h4>${order.pickupLocation} → ${order.dropLocation}</h4>
-          <p>${order.description || 'No description'} • ${order.payloadWeight}kg • ${order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</p>
+          <p>${order.description || 'No description'} •
+          ${order.payloadWeight}kg •
+          ${order.createdAt ? new Date(order.createdAt).toLocaleDateString() : 'N/A'}</p>
         </div>
         <span class="order-status status-${order.status.replace(' ', '-')}">${order.status}</span>
       </div>
@@ -88,7 +199,6 @@ async function sendMessage() {
 
   addChatMessage(message, 'user');
   input.value = '';
-
   addChatMessage('Thinking...', 'bot');
 
   try {
@@ -142,4 +252,7 @@ function logout() {
   window.location.href = 'login.html';
 }
 
-loadOrders();
+document.addEventListener('DOMContentLoaded', () => {
+  initMiniMap();
+  loadOrders();
+});

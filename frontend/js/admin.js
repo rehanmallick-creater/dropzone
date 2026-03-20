@@ -204,6 +204,27 @@ async function updateStatus(orderId, status) {
       return;
     }
 
+    if (status === 'on the way' && data.drone) {
+      const droneId = data.drone._id;
+
+      const drone = await fetch(`${API}/drones/${droneId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      }).then(r => r.json());
+
+      const pickupLat = data.pickupLat || drone.latitude;
+      const pickupLng = data.pickupLng || drone.longitude;
+      const dropLat = data.dropLat || (drone.latitude + 0.02);
+      const dropLng = data.dropLng || (drone.longitude + 0.02);
+
+      simulateDroneMovement(
+        droneId,
+        pickupLat,
+        pickupLng,
+        dropLat,
+        dropLng
+      );
+    }
+
     loadOrders();
     loadDrones();
 
@@ -223,6 +244,31 @@ function logout() {
   localStorage.removeItem('user');
   window.location.href = 'login.html';
 }
+function simulateDroneMovement(droneId, startLat, startLng, endLat, endLng) {
+  const steps = 50;
+  let currentStep = 0;
+
+  const latStep = (endLat - startLat) / steps;
+  const lngStep = (endLng - startLng) / steps;
+
+  const interval = setInterval(() => {
+    if (currentStep >= steps) {
+      clearInterval(interval);
+      return;
+    }
+
+    const newLat = startLat + (latStep * currentStep);
+    const newLng = startLng + (lngStep * currentStep);
+
+    if (droneMarkers[droneId]) {
+      droneMarkers[droneId].setLatLng([newLat, newLng]);
+      map.panTo([newLat, newLng]);
+    }
+
+    currentStep++;
+  }, 200);
+}
+
 
 initMap();
 loadDrones();

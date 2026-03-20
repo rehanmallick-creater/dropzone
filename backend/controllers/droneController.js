@@ -38,3 +38,13 @@ exports.deleteDrone = async (req, res) => {//delete drone
     res.status(500).json({ message: error.message });
   }
 };
+
+exports.getDrone = async (req, res) => {
+  try {
+    const drone = await Drone.findById(req.params.id);
+    if (!drone) return res.status(404).json({ message: 'Drone not found' });
+    res.status(200).json(drone);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

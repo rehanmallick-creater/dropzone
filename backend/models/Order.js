@@ -26,6 +26,15 @@ const orderSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    dropLat: {
+      type: Number,
+      default: 25.5941
+    },
+    dropLng: {
+      type: Number,
+      default: 85.1376
+    },
+    
     payloadWeight: {
       type: Number,
       required: true,
