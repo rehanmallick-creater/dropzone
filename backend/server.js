@@ -6,6 +6,7 @@ const connectDB=require('./config/db');
 const authRoutes=require('./routes/authRoutes');
 const droneRoutes = require('./routes/droneRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const chatRoutes = require('./routes/chatRoutes');
 
 dotenv.config();
 connectDB();
@@ -20,6 +21,7 @@ app.get('/',(req , res)=>{
 app.use('/api/auth', authRoutes);
 app.use('/api/drones', droneRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/chat', chatRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT,()=>{

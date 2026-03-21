@@ -202,24 +202,18 @@ async function sendMessage() {
   addChatMessage('Thinking...', 'bot');
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch(`${API}/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': 'YOUR_CLAUDE_API_KEY',
-        'anthropic-version': '2023-06-01'
+        'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 300,
-        system: 'You are a helpful delivery assistant for DropZone, a drone delivery service. Answer questions about deliveries, drone tracking, and orders. Keep answers short and helpful.',
-        messages: [{ role: 'user', content: message }]
-      })
+      body: JSON.stringify({ message })
     });
 
     const data = await response.json();
     const lastBot = document.querySelector('.chat-message.bot:last-child .chat-bubble');
-    if (lastBot) lastBot.textContent = data.content[0].text;
+    if (lastBot) lastBot.textContent = data.reply || 'Sorry I could not understand that!';
 
   } catch (error) {
     const lastBot = document.querySelector('.chat-message.bot:last-child .chat-bubble');
