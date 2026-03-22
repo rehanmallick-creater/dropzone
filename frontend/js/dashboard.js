@@ -102,12 +102,13 @@ function handleDropSelect() {
 async function placeOrder() {
   const pickup = document.getElementById('pickup').value;
   const drop = document.getElementById('drop').value;
-  const dropLat = document.getElementById('dropLat').value;
-  const dropLng = document.getElementById('dropLng').value;
   const description = document.getElementById('description').value;
   const payload = document.getElementById('payload').value;
   const pickupLat = document.getElementById('pickupLat').value;
   const pickupLng = document.getElementById('pickupLng').value;
+  const dropLat = document.getElementById('dropLat').value;
+  const dropLng = document.getElementById('dropLng').value;
+  const btn = document.querySelector('.btn-primary');
 
   if (!pickup || !drop || !payload) {
     showOrderAlert('Please fill all required fields', 'error');
@@ -118,6 +119,9 @@ async function placeOrder() {
     showOrderAlert('Payload weight must be greater than 0', 'error');
     return;
   }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Placing order...';
 
   try {
     const response = await fetch(`${API}/orders`, {
@@ -142,10 +146,14 @@ async function placeOrder() {
 
     if (!response.ok) {
       showOrderAlert(data.message, 'error');
+      btn.disabled = false;
+      btn.innerHTML = 'Place Order';
       return;
     }
 
     showOrderAlert('Order placed successfully!', 'success');
+    btn.disabled = false;
+    btn.innerHTML = 'Place Order';
     document.getElementById('pickup').value = '';
     document.getElementById('drop').value = '';
     document.getElementById('description').value = '';
@@ -158,20 +166,27 @@ async function placeOrder() {
 
   } catch (error) {
     showOrderAlert('Something went wrong. Try again.', 'error');
+    btn.disabled = false;
+    btn.innerHTML = 'Place Order';
   }
 }
-
 async function loadOrders() {
   try {
+    const list = document.getElementById('ordersList');
+    list.innerHTML = '<div class="loading"><span class="spinner"></span>Loading orders...</div>';
+
     const response = await fetch(`${API}/orders/myorders`, {
       headers: { 'Authorization': `Bearer ${token}` }
     });
 
     const orders = await response.json();
-    const list = document.getElementById('ordersList');
 
     if (orders.length === 0) {
-      list.innerHTML = '<div class="loading">No orders yet. Place your first order!</div>';
+      list.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">📦</div>
+          <p>No orders yet. Place your first delivery!</p>
+        </div>`;
       return;
     }
 
