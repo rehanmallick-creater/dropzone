@@ -1,4 +1,4 @@
-const API = 'http://localhost:5000/api';
+const API = 'https://dropzone-backend-q3cu.onrender.com/api';
 
 async function handleLogin() {
   const email = document.getElementById('email').value;
